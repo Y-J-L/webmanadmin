@@ -1,0 +1,179 @@
+{extend name="common/layout"}
+
+{block name="body_tag_class"}{/block}
+
+{block name="main"}
+<form class="layui-form" action="">
+	<div class="mainBox">
+		<div class="main-container">
+
+			<input type="hidden" name="id" value="{$info.id|default='0'}">
+			<div class="layui-form-item">
+				<label class="layui-form-label">上级权限</label>
+				<div class="layui-input-block">
+					<ul id="plist"></ul>
+				</div>
+			</div>
+
+			<div class="layui-form-item">
+				<label class="layui-form-label">菜单名称</label>
+				<div class="layui-input-block">
+					<input type="text" name="title" value="{$info['title']}" autocomplete="off"
+						   placeholder="请输入菜单名称" lay-verify="required" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">图标</label>
+				<div class="layui-input-block">
+					<input type="text" id="iconPicker" value="{$info.icon|default=''}" name="icon" class="layui-input">
+				</div>
+			</div>
+
+			<div class="layui-form-item">
+				<label class="layui-form-label">app</label>
+				<div class="layui-input-block">
+					<input type="text" name="app" value="{$info.app}" autocomplete="off" placeholder=""
+						   class="layui-input" lay-verify="required" >
+				</div>
+			</div>
+
+			<div class="layui-form-item">
+				<label class="layui-form-label">controller</label>
+				<div class="layui-input-block">
+					<input type="text" name="controller" value="{$info.controller}" autocomplete="off"
+						   class="layui-input" lay-verify="required" >
+				</div>
+			</div>
+
+			<div class="layui-form-item">
+				<label class="layui-form-label">action</label>
+				<div class="layui-input-block">
+					<input type="text" name="action" value="{$info.action}"
+						   autocomplete="off" class="layui-input" lay-verify="required" >
+				</div>
+			</div>
+
+			<div class="layui-form-item">
+				<label class="layui-form-label">排序</label>
+				<div class="layui-input-block">
+					<input type="text" name="sort" value="{$info.sort|default='0'}"
+						   autocomplete="off" placeholder="排序" class="layui-input">
+				</div>
+			</div>
+
+			<div class="layui-form-item">
+				<label class="layui-form-label">类型</label>
+				<div class="layui-input-block">
+					<input type="radio" name="type" {if condition="$info.type eq '0' or $info.type eq ''"} checked {/if} value="0" title="目录">
+					<input type="radio" name="type" {if condition="$info.type eq '1'"} checked {/if}  value="1" title="菜单">
+				</div>
+			</div>
+
+			<div class="layui-form-item">
+				<label class="layui-form-label">显示状态</label>
+				<div class="layui-input-block">
+
+					<input type="radio" name="is_show" {if condition="$info.is_show eq '0' or $info.type eq ''"} checked {/if} value="0" title="隐藏">
+					<input type="radio" name="is_show" {if condition="$info.is_show eq '1'"} checked {/if}  value="1" title="显示">
+
+				</div>
+			</div>
+
+		</div>
+	</div>
+	<div class="bottom">
+		<div class="button-container">
+			<button type="submit" class="pear-btn pear-btn-primary pear-btn-sm" lay-submit=""
+					lay-filter="user-save">
+				<i class="layui-icon layui-icon-ok"></i>
+				提交
+			</button>
+			<!-- <button type="reset" class="pear-btn pear-btn-sm">
+                <i class="layui-icon layui-icon-refresh"></i>
+                重置
+            </button> -->
+		</div>
+	</div>
+</form>
+{/block}
+
+{block name="footer_script"}
+<script>
+	layui.use(['form', 'jquery','iconPicker','dtree'], function() {
+		let form = layui.form;
+		let $ = layui.jquery;
+		var dtree = layui.dtree;
+
+		dtree.render({
+			elem: "#plist",
+			initLevel: "3",
+			method: 'get',
+			url: "/admin/menu/sellist",
+			select: true,
+			parentId: 'pid',
+			line : true,
+			skin : 'laySimple',
+			selectInitVal : "{$info.pid|default='0'}"
+			//dataFormat:'list'
+		});
+
+		//选择菜单事件
+		dtree.on("node('plist')" ,function(param){
+
+		});
+
+		//图标
+		var iconPicker = layui.iconPicker;
+		iconPicker.render({
+			elem: '#iconPicker',
+			type: 'fontClass',
+			search: true,
+			page: true,
+			limit: 16,
+			click: function(data) {
+				console.log(data);
+			},
+			success: function(d) {
+				console.log(d);
+			}
+		});
+
+		form.on('submit(user-save)', function(data) {
+			$.ajax({
+				url: '/admin/menu/edit',
+				data: JSON.stringify(data.field),
+				dataType: 'json',
+				contentType: 'application/json',
+				type: 'post',
+				success: function(res) {
+
+					if(res.code == 1){
+						//成功
+						layer.msg(res.msg, {
+							icon: 1,
+							time: 1000
+						}, function() {
+
+							//刷新上级页面
+							window.parent.location.reload();
+
+							parent.layer.close(parent.layer.getFrameIndex(window
+									.name)); //关闭当前页
+							//parent.layui.table.reload("power-table");
+						});
+
+
+					}else{
+						//失败
+						layer.msg(res.msg, {
+							icon: 2,
+							time: 1000
+						});
+					}
+				}
+			})
+			return false;
+		});
+	})
+</script>
+{/block}

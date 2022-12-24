@@ -1,0 +1,92 @@
+{extend name="common/layout"}
+
+{block name="head"}
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<title>登录</title>
+	<!-- 样 式 文 件 -->
+	<link rel="stylesheet" href="/pearadmin/component/pear/css/pear.css" />
+	<link rel="stylesheet" href="/pearadmin/admin/css/other/login.css" />
+{/block}
+
+{block name='body_tag_class'}{/block}
+
+{block name="body_tag_attr"}
+style="background-size: cover;background-image: url('/pearadmin/admin/images/background.svg')"
+{/block}
+
+{block name="main"}
+	<form class="layui-form" action="javascript:void(0);">
+		<div class="layui-form-item">
+			<img class="logo" src="/pearadmin/admin/images/logo.png" />
+			<div class="title">Admin Login</div>
+			<div class="desc">
+
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<input placeholder="账号" name="account" lay-verify="required" hover class="layui-input" />
+		</div>
+		<div class="layui-form-item">
+			<input placeholder="密码" type="password" name="password" lay-verify="required" hover class="layui-input" />
+		</div>
+		<div class="layui-form-item">
+			<input placeholder="验证码 : " name="captcha" hover lay-verify="required" class="code layui-input layui-input-inline" />
+			<img src="/admin/public/captcha" class="codeImage" id="codeimage" />
+		</div>
+
+		<div class="layui-form-item">
+			<button type="button" class="pear-btn pear-btn-success login" lay-submit lay-filter="login">
+				登 入
+			</button>
+		</div>
+	</form>
+{/block}
+{block name="footer"}
+	<!-- 资 源 引 入 -->
+	<script src="/pearadmin/component/layui/layui.js"></script>
+	<script src="/pearadmin/component/pear/pear.js"></script>
+	<script>
+		layui.use(['form', 'button', 'jquery', 'popup', 'layer'], function () {
+			var form = layui.form;
+			var button = layui.button;
+			var popup = layui.popup;
+			var $ = layui.jquery;
+			var layer = layui.layer;
+
+			// 登 录 提 交
+			form.on('submit(login)', function (data) {
+				/// 验证
+				layer.load();
+				$.ajax({
+					type: "POST",
+					data: data.field,
+					success: function (res) {
+						console.log(res);
+						if (res.code == 1) {
+							layer.msg(res.msg, { icon: 1, time: 500 }, function () {
+								location.href = '/admin/index/index';
+							})
+						} else {
+							layer.msg(res.msg, { icon: 2, time: 2000 }, function () {
+								initCode();
+							})
+						}
+
+						layer.closeAll('loading');
+					}
+				});
+
+				return false;
+			});
+
+			function initCode() {
+				$('#codeimage').attr("src", "/admin/public/captcha?data=" + new Date().getTime());
+			}
+
+			$("#codeimage").click(function () {
+				initCode();
+			});
+		})
+	</script>
+{/block}

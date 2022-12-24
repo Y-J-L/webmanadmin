@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {block name="head"}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>{block name="title"} {:get_option_key('site_info','title','Admin')} 后台管理 {/block}</title>
+    <!-- 依 赖 样 式 -->
+    <link rel="stylesheet" href="/pearadmin/component/pear/css/pear.css" />
+    <!-- 加 载 样 式 -->
+    <link rel="stylesheet" href="/pearadmin/admin/css/loader.css" />
+    <!-- 布 局 样 式 -->
+    <link rel="stylesheet" href="/pearadmin/admin/css/admin.css" />
+    <link rel="stylesheet" href="/pearadmin/admin/css/other/console1.css" />
+    {block name="header_script"}{/block}
+    {/block}
+</head>
+<body class="{block name='body_tag_class'}pear-container{/block}" {block name="body_tag_attr"}{/block}>
+{block name="main"}{/block}
+{block name="footer"}
+<!-- 依 赖 脚 本 -->
+<script src="/pearadmin/component/layui/layui.js"></script>
+<script src="/pearadmin/component/pear/pear.js"></script>
+{block name="footer_script"}{/block}
+{/block}
+</body>
+</html>

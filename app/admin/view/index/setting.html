@@ -1,0 +1,242 @@
+{extend name="common/layout"}
+
+{block name="main"}
+<form class="layui-form" action="">
+
+    <div class="layui-card">
+        <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+            <ul class="layui-tab-title">
+                <li class="layui-this">网站设置</li>
+                <li>上传配置</li>
+            </ul>
+            <div class="layui-tab-content" style="height: 100px;">
+                <div class="layui-tab-item layui-show">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">网站标题</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="site_info[title]" value="{$site_info.title}" lay-verify="title" autocomplete="off" placeholder="请输入网站标题" class="layui-input">
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">网站描述</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="site_info[desc]"  value="{$site_info.desc}" autocomplete="off" placeholder="请输入网站描述" class="layui-input">
+                        </div>
+                    </div>
+
+
+                </div>
+                <div class="layui-tab-item">
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">存储位置</label>
+                        <div class="layui-input-block">
+                            <input type="radio" lay-filter="radiotype" name="upload_info[type]" value="0" title="本地" {if condition="$upload_info['type'] eq '0' or $upload_info['type'] eq '' "} checked="" {/if} >
+                            <input type="radio" lay-filter="radiotype" name="upload_info[type]" value="1" title="阿里云" {if condition="$upload_info['type'] eq '1'"} checked="" {/if} >
+                            <input type="radio" lay-filter="radiotype" name="upload_info[type]" value="2" title="七牛云" {if condition="$upload_info['type'] eq '2'"} checked="" {/if} >
+                        </div>
+                        <div class="layui-form-mid layui-word-aux">选择阿里云/七牛云需要修改配置文件/config/plugin/tinywan/storage</div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">允许的文件后缀</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="upload_info[extensions]"  value="{$upload_info.extensions}" autocomplete="off" placeholder="例如:png,jpg,mp4" class="layui-input">
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">允许的文件大小(MB)</label>
+                        <div class="layui-input-block">
+                            <input type="number" name="upload_info[maxsize]"  value="{$upload_info.maxsize}" autocomplete="off" placeholder="例如:10" class="layui-input">
+                        </div>
+                        <div class="layui-form-mid layui-word-aux">请注意不要超过服务器设置的最大上传限制</div>
+                    </div>
+
+
+
+                    <div id="oss" style="display:none" >
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">地域地址</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="upload_info[oss_endpoint]"  value="{$upload_info.oss_endpoint}" autocomplete="off" placeholder="请输入地域地址,例如:https://oss-cn-hangzhou.aliyuncs.com" class="layui-input">
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">Bucket</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="upload_info[oss_bucket]"  value="{$upload_info.oss_bucket}" autocomplete="off" placeholder="请输入Bucket" class="layui-input">
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">accessKeyId</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="upload_info[oss_accessKeyId]"  value="{$upload_info.oss_accessKeyId}" autocomplete="off" placeholder="请输入accessKeyId" class="layui-input">
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">KeySecret</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="upload_info[oss_accessKeySecret]"  value="{$upload_info.oss_accessKeySecret}" autocomplete="off" placeholder="请输入accessKeySecret" class="layui-input">
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div id="qiniu" style="display:none"  >
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">空间域名</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="upload_info[qiniu_bucketUrl]"  value="{$upload_info.qiniu_bucketUrl}" autocomplete="off" placeholder="请输入绑定空间域名" class="layui-input">
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">Bucket</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="upload_info[qiniu_bucket]"  value="{$upload_info.qiniu_bucket}" autocomplete="off" placeholder="请输入Bucket" class="layui-input">
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">accessKey</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="upload_info[qiniu_accessKey]"  value="{$upload_info.qiniu_accessKey}" autocomplete="off" placeholder="请输入accessKey" class="layui-input">
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">secretKey</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="upload_info[qiniu_secretKey]"  value="{$upload_info.qiniu_secretKey}" autocomplete="off" placeholder="请输入secretKey" class="layui-input">
+                            </div>
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+
+
+        <div class="layui-form-item" style="padding: 30px 30px 30px 30px;" >
+
+            <button type="submit" class="pear-btn pear-btn-primary " lay-submit=""
+                    lay-filter="save">
+                <i class="layui-icon layui-icon-ok"></i>
+                保存
+            </button>
+
+        </div>
+
+
+
+    </div>
+
+</form>
+{/block}
+
+{block name="footer_script"}
+<script>
+    layui.use(['form', 'jquery', 'common','upload','element'], function () {
+        let form = layui.form;
+        let $ = layui.jquery;
+        let common = layui.common;
+        let upload = layui.upload;
+        let element = layui.element;
+
+        var uploadInst = upload.render({
+            elem: '#test1'
+            ,url: '/api/upload/upload' //此处用的是第三方的 http 请求演示，实际使用时改成您自己的上传接口即可。
+            ,before: function(obj){
+                //预读本地文件示例，不支持ie8
+                obj.preview(function(index, file, result){
+                    $('#demo1').attr('src', result); //图片链接（base64）
+                });
+
+                element.progress('demo', '0%'); //进度条复位
+                layer.msg('上传中', {icon: 16, time: 0});
+            }
+            ,done: function(res){
+                //如果上传失败
+                if(res.code == 0){
+                    return layer.msg('上传失败');
+                }
+                //上传成功的一些操作
+                //……
+                $('#demoText').html(''); //置空上传失败的状态
+            }
+            ,error: function(){
+                //演示失败状态，并实现重传
+                var demoText = $('#demoText');
+                demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-xs demo-reload">重试</a>');
+                demoText.find('.demo-reload').on('click', function(){
+                    uploadInst.upload();
+                });
+            }
+            //进度条
+            ,progress: function(n, elem, e){
+                element.progress('demo', n + '%'); //可配合 layui 进度条元素使用
+                if(n == 100){
+                    layer.msg('上传完毕', {icon: 1});
+                }
+            }
+        });
+
+
+        form.on('submit(save)', function(data) {
+            $.ajax({
+                url: '/admin/index/syssetting',
+                data: data.field,
+                dataType: 'json',
+                //contentType: 'application/json',
+                type: 'post',
+                success: function(result) {
+                    if (result.code == 1) {
+                        layer.msg(result.msg, {
+                            icon: 1,
+                            time: 1000
+                        }, function() {
+                            parent.layui.admin.refreshThis();
+                        });
+                    } else {
+                        layer.msg(result.msg, {
+                            icon: 2,
+                            time: 1000
+                        });
+                    }
+                }
+            })
+            return false;
+        });
+
+
+        //切换单选按钮
+        form.on('radio(radiotype)', function(data){
+            //console.log(data.elem); //得到radio原始DOM对象
+            //console.log(data.value); //被点击的radio的value值
+            let value = data.value;
+            // if(value == 0){
+            //     $("#oss").hide();
+            //     $("#qiniu").hide();
+            // }else if(value == 1){
+            //     $("#qiniu").hide();
+            //     $("#oss").show();
+            // }else if(value == 2){
+            //     $("#oss").hide();
+            //     $("#qiniu").show();
+            // }
+        });
+
+
+    })
+</script>
+{/block}

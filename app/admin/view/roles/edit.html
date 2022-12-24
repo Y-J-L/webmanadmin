@@ -1,0 +1,124 @@
+{extend name="common/layout"}
+
+{block name="body_tag_class"}{/block}
+
+{block name="main"}
+<form class="layui-form" action="">
+	<div class="mainBox">
+		<div class="main-container">
+
+			<input type="hidden" name="id" value="{$info.id|default='0'}">
+
+			<div class="layui-form-item">
+				<label class="layui-form-label">角色名称</label>
+				<div class="layui-input-block">
+					<input type="text" name="name" value="{$info['name']}" autocomplete="off"
+						   placeholder="请输入角色名称" lay-verify="required" class="layui-input">
+				</div>
+			</div>
+
+			<div class="layui-form-item">
+				<label class="layui-form-label">角色权限</label>
+				<div class="layui-input-block">
+					<ul id="plist"></ul>
+				</div>
+			</div>
+
+		</div>
+	</div>
+	<div class="bottom">
+		<div class="button-container">
+			<button type="submit" class="pear-btn pear-btn-primary pear-btn-sm" lay-submit=""
+					lay-filter="user-save">
+				<i class="layui-icon layui-icon-ok"></i>
+				提交
+			</button>
+			<!-- <button type="reset" class="pear-btn pear-btn-sm">
+                <i class="layui-icon layui-icon-refresh"></i>
+                重置
+            </button> -->
+		</div>
+	</div>
+</form>
+{/block}
+
+{block name="footer_script"}
+<script>
+	layui.use(['form', 'jquery','iconPicker','dtree'], function() {
+		let form = layui.form;
+		let $ = layui.jquery;
+		var dtree = layui.dtree;
+
+		dtree.render({
+			elem: "#plist",
+			initLevel: "3",
+			method: 'get',
+			url: "/admin/roles/getmenu?id="+"{$id}",
+			parentId: 'pid',
+			checkbar: true,
+			line : true,
+			//checkbarType:"no-all",//未全选上级使用半选模式
+			skin : 'laySimple',
+		});
+
+		//选择菜单事件
+		dtree.on("node('plist')" ,function(param){
+			console.log(params);
+		});
+
+		//图标
+		var iconPicker = layui.iconPicker;
+		iconPicker.render({
+			elem: '#iconPicker',
+			type: 'fontClass',
+			search: true,
+			page: true,
+			limit: 16,
+			click: function(data) {
+				//console.log(data);
+			},
+			success: function(d) {
+				//console.log(d);
+			}
+		});
+
+		form.on('submit(user-save)', function(data) {
+
+			var params = dtree.getCheckbarNodesParam("plist");
+			data.field.rules = params;
+
+			console.log(data);
+			$.ajax({
+				url: '/admin/roles/edit',
+				data: JSON.stringify(data.field),
+				dataType: 'json',
+				contentType: 'application/json',
+				type: 'post',
+				success: function(res) {
+
+					if(res.code == 1){
+						//成功
+						layer.msg(res.msg, {
+							icon: 1,
+							time: 1000
+						}, function() {
+							parent.layer.close(parent.layer.getFrameIndex(window
+									.name)); //关闭当前页
+							parent.layui.table.reload("user-table");
+						});
+
+
+					}else{
+						//失败
+						layer.msg(res.msg, {
+							icon: 2,
+							time: 1000
+						});
+					}
+				}
+			})
+			return false;
+		});
+	})
+</script>
+{/block}

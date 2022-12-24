@@ -1,0 +1,123 @@
+{extend name="common/layout"}
+
+{block name="main"}
+<div class="layui-card" style="display: none;">
+	<div class="layui-card-body">
+		<form id="userForm" class="layui-form" action="">
+			<div class="layui-form-item">
+				<div class="layui-inline">
+					<label class="layui-form-label">文件名</label>
+					<div class="layui-input-inline">
+						<input type="text" name="name" placeholder="" class="layui-input">
+					</div>
+				</div>
+
+				<div class="layui-inline" style="margin-left: 50px;">
+					<button class="pear-btn pear-btn-md pear-btn-primary" lay-submit lay-filter="user-query">
+						<i class="layui-icon layui-icon-search"></i>
+						查询
+					</button>
+					<button type="reset" class="pear-btn pear-btn-md" lay-submit lay-filter="user-refresh" >
+						<i class="layui-icon layui-icon-refresh"></i>
+						重置
+					</button>
+					<button type="button" class="pear-btn pear-btn-md expand">
+					</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+<div class="layui-card">
+	<div class="layui-card-body">
+		<table id="user-table" lay-filter="user-table"></table>
+	</div>
+</div>
+{/block}
+
+{block name="footer_script"}
+<script>
+	layui.use(['table', 'form', 'jquery', 'drawer', 'dropdown'], function() {
+		let table = layui.table;
+		let form = layui.form;
+		let $ = layui.jquery;
+		let drawer = layui.drawer;
+		let dropdown = layui.dropdown;
+
+		let cols = [
+			[   {
+				title: 'ID',
+				field: 'id',
+				align: 'center',
+				width: 50
+			},
+				{
+					title: '原始文件名',
+					field: 'origin_name',
+					align: 'center',
+				},
+				{
+					title: '类型',
+					field: 'mime_type',
+					align: 'center',
+				},
+				{
+					title: '后缀',
+					field: 'extension',
+					align: 'center',
+				},
+				{
+					title: '大小',
+					field: 'size',
+					align: 'center',
+				},
+				{
+					title: '创建时间',
+					field: 'create_time',
+					align: 'center',
+				}
+			]
+		]
+
+		table.render({
+			elem: '#user-table',
+			url: '/admin/index/getuploadlist',
+			page: true,
+			limits: [10,30,100,500,1000,2000],
+			cols: cols,
+			skin: 'line',
+			toolbar: '#user-toolbar',
+			response: {
+				statusCode: 1
+			},
+			defaultToolbar: [{
+				layEvent: 'refresh',
+				icon: 'layui-icon-refresh',
+			}, 'filter', 'print', 'exports'],
+		});
+
+		table.on('toolbar(user-table)', function(obj) {
+			if (obj.event === 'refresh') {
+				window.refresh();
+			}
+		});
+
+		form.on('submit(user-query)', function(data) {
+			table.reload('user-table', {
+				where: data.field
+			})
+			return false;
+		});
+
+		form.on('submit(user-refresh)',function(data){
+			//alert('123');
+			parent.layui.admin.refreshThis()
+			return false;
+		});
+
+		window.refresh = function(param) {
+			table.reload('user-table');
+		}
+	})
+</script>
+{/block}
